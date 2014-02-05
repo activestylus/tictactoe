@@ -92,8 +92,9 @@
     },
 
     win = function (tally) {
-        for (var i = 0; i < winner().length; i += 1) {
-            if ((winner()[i] & tally) === winner()[i]) {
+        var w = winner();
+        for (var i = 0; i < w.length; i += 1) {
+            if ((w[i] & tally) === w[i]) {
                 return true;
             }
         }
@@ -138,8 +139,6 @@
     };
     play();
   });
-
-
 </script>
   </body>
 </html>
