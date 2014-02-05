@@ -1,0 +1,99 @@
+<html>
+  <head>
+    <title>Tic Tac Toe</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <style>
+      body {font-family: "Arial";}
+      table td {
+        width: 100px;
+        height: 100px;
+        border: 1px solid #ccc;
+        text-align: center;
+        font-weight: bold;
+        zoom: 1;
+      }
+      td.active {background:#ccc;}
+    </style>
+  </head>
+  <body>
+    <h1>Tic Tac Toe</h1>
+    <p>Player A: X</p>
+    <p>Player B: O</p>
+    <div id="board"></div>
+    <br>
+    <ul>
+      <li>Working in all major browsers (including IE7+)</li>
+      <li>Scalable board size thanks to a little math</li>
+      <li>Only uses jQuery</li>
+    </ul>
+<script type='text/javascript'>
+  $(function () {
+
+    var boxes = [], 
+        CELLS = 3,
+        NONE = "&nbsp;",
+        tally,
+        moves,
+        turn = "X",
+
+    winner = [7, 56, 448, 73, 146, 292, 273, 84];
+
+    start = function () {
+        turn = "X";
+        tally = {"X": 0, "O": 0};
+        moves = 0;
+        boxes.forEach(function (s) {s.html(NONE);});
+    },
+
+    win = function (tally) {
+        for (var i = 0; i < winner.length; i += 1) {
+            if ((winner[i] & tally) === winner[i]) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    set = function () {
+        if ($(this).html() !== NONE) {
+            return;
+        }
+        $(this).html(turn);
+        moves += 1;
+        tally[turn] += $(this)[0].indicator;
+        if (win(tally[turn])) {
+            var player = turn === 'X' ? 'Player A' : 'Player B';
+            alert(player + " is the winner!");
+            start();
+        } else if (moves === CELLS * CELLS) {
+            alert("It's a draw! Would you like to play again?");
+            start();
+        } else {
+            turn = turn === "X" ? "O" : "X";
+        }
+    },
+
+    play = function () {
+        var board = $("<table>"), indicator = 1;
+        for (var i = 0; i < CELLS; i += 1) {
+            var row = $("<tr>");
+            board.append(row);
+            for (var j = 0; j < CELLS; j += 1) {
+                var cell = $("<td></td>");
+                cell[0].indicator = indicator;
+                cell.click(set);
+                row.append(cell);
+                boxes.push(cell);
+                indicator += indicator;
+            }
+        }
+        $("#board").append(board);
+        start();
+    };
+    play();
+  });
+
+
+</script>
+  </body>
+</html>
