@@ -2,6 +2,7 @@
   <head>
     <title>Tic Tac Toe</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
     <style>
       body {font-family: "Arial";}
       table td {
@@ -16,11 +17,10 @@
     </style>
   </head>
   <body>
-    <h1>Tic Tac Toe</h1>
+    <!--<h1>Tic Tac Toe</h1>
     <p>Player A: X</p>
-    <p>Player B: O</p>
+    <p>Player B: O</p>-->
     <div id="board"></div>
-    <br>
     <ul>
       <li>Working in all major browsers (including IE7+)</li>
       <li>Scalable board size thanks to a little math</li>
@@ -28,15 +28,61 @@
     </ul>
 <script type='text/javascript'>
   $(function () {
-
     var boxes = [], 
-        CELLS = 3,
+        CELLS = prompt('Input the number of cells or press enter for default (3)') || 3,
+        TOTAL = Math.pow(CELLS,2),
         NONE = "&nbsp;",
         tally,
         moves,
         turn = "X",
-
-    winner = [7, 56, 448, 73, 146, 292, 273, 84],
+    sumArray = function (arr) {
+        var sum = 0
+        ,   i   = arr.length;
+        while(i--) { sum += arr[i] }
+        return sum;
+    },
+    splitPowers = function (a,n) {
+        var len = a.length,out = [], i = 0;
+        while (i < len) {
+            var size = Math.ceil((len - i) / n--);
+            out.push(a.slice(i, i += size));
+        }
+        return out;
+    },
+    matrix = function () {
+        var powers = []
+        for (var i = 0; i < TOTAL; i += 1) {
+            powers.push(Math.pow(2,i));
+        }
+        return splitPowers(powers,CELLS);
+    },
+    winner = function () {
+        var result = []
+        ,   arr = matrix()
+        ,   diagonalLeftWin = []
+        ,   diagonalRightWin = []
+        ,   indexes = [];
+        for (var i = 0; i < CELLS; i += 1) {
+            indexes.push(i)
+            var horizontalWin = []
+            ,   verticalWin = [];
+            for (var j = 0; j < CELLS; j += 1) {
+                horizontalWin.push(arr[j][i]);
+                verticalWin.push(arr[i][j]);
+            }
+            diagonalLeftWin.push(arr[i][i]);
+            result.push(sumArray(horizontalWin));
+            result.push(sumArray(verticalWin));
+        }
+        var ind = _.zip(indexes,indexes.concat().reverse());
+        for (var i = 0; i < CELLS; i += 1) {
+            var row = ind[i];
+            diagonalRightWin.push(arr[row[0]][row[1]])
+        }
+        result.push(sumArray(diagonalLeftWin));
+        result.push(sumArray(diagonalRightWin));
+        return result;
+    },
 
     start = function () {
         turn = "X";
@@ -46,8 +92,8 @@
     },
 
     win = function (tally) {
-        for (var i = 0; i < winner.length; i += 1) {
-            if ((winner[i] & tally) === winner[i]) {
+        for (var i = 0; i < winner().length; i += 1) {
+            if ((winner()[i] & tally) === winner()[i]) {
                 return true;
             }
         }
@@ -65,7 +111,7 @@
             var player = turn === 'X' ? 'Player A' : 'Player B';
             alert(player + " is the winner!");
             start();
-        } else if (moves === CELLS * CELLS) {
+        } else if (moves === TOTAL) {
             alert("It's a draw! Would you like to play again?");
             start();
         } else {
